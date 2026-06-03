@@ -1,9 +1,95 @@
-venv/
+# ==================================================
+# Python
+# ==================================================
 __pycache__/
-*.pyc
-db.sqlite3
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment Variables
 .env
-.idea/
-.vscode/
-media/
+.env.*
+!.env.example
+# Model files (retrainable)
+*.pkl
+ml/model/*.pkl
+ml/model/n_disaster_model.pkl
+# ==================================================
+# Django
+# ==================================================
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Static & Media Files
 staticfiles/
+media/
+
+# ==================================================
+# Machine Learning
+# ==================================================
+*.pkl
+*.joblib
+data/
+datasets/
+models/
+model/
+
+# ==================================================
+# Frontend (React / Next.js)
+# ==================================================
+frontend/node_modules/
+frontend/.next/
+frontend/dist/
+frontend/build/
+frontend/.env.local
+
+# ==================================================
+# IDE & Editor
+# ==================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ==================================================
+# Operating System Files
+# ==================================================
+.DS_Store
+Thumbs.db
+
+# ==================================================
+# Testing & Coverage
+# ==================================================
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# ==================================================
+# Jupyter Notebook
+# ==================================================
+.ipynb_checkpoints/
+
+# ==================================================
+# Build Artifacts
+# ==================================================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ==================================================
+# Miscellaneous
+# ==================================================
+.cache/
+tmp/
+temp/
