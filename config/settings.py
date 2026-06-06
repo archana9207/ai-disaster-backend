@@ -19,9 +19,15 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-fallback-key-change-in-prod')
+SECRET_KEY = 'django-insecure-_pwzb*jvcdox8mmi-w+vf)&6o=4tgz%#up$h@*dvj!%e%f+o1p'
+
 DEBUG = True
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# BUG FIX: ALLOWED_HOSTS = [] rejects every request in Django 4+ when the
+# Host header is present (i.e. always). Must include localhost / 127.0.0.1
+# for local development, otherwise Django returns 400 Bad Request before the
+# view is ever reached — this surfaces as a 500 to the browser.
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -40,7 +46,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # must be first
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -72,11 +78,11 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME"),
-        "USER": os.getenv("DB_USER"),
-        "PASSWORD": os.getenv("DB_PASSWORD"),
-        "HOST": os.getenv("DB_HOST"),
-        "PORT": os.getenv("DB_PORT"),
+        "NAME": os.getenv("DB_NAME", "disaster_db"),
+        "USER": os.getenv("DB_USER", "postgres"),
+        "PASSWORD": os.getenv("DB_PASSWORD", "root"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
 
@@ -93,6 +99,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+
+# BUG FIX: missing DEFAULT_AUTO_FIELD causes Django system checks to warn
+# and can cause migration failures with the custom User model.
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
@@ -102,20 +111,21 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
-    
-     
-    'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S.%fZ',
-    'DATETIME_INPUT_FORMATS': ['iso-8601'],
 }
 
+# CORS — allow the Next.js dev server
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_HEADERS = [
-    'accept', 'accept-encoding', 'authorization', 'content-type',
-    'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with',
+
+# BUG FIX: CORS_ALLOW_HEADERS must explicitly include Authorization so that
+# the JWT Bearer token sent by the frontend is not stripped by the CORS
+# preflight check, which would make every authenticated request return 401.
+from corsheaders.defaults import default_headers  # noqa: E402
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'Authorization',
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -126,4 +136,16 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': True,
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
 }

@@ -41,6 +41,18 @@ DECISION_SUPPORT_MAP = {
             'Update local forecast database',
             'No public alert needed'
         ]
+    },
+    
+    'Cyclone': {
+        'recommendation': 'Extreme cyclone alert! Evacuate coastal areas immediately. Secure all structures.',
+        'actions': [
+            'Issue mass evacuation order',
+            'Close airports and seaports',
+            'Activate emergency shelters',
+            'Deploy disaster response teams',
+            'Stockpile food, water, and medicine',
+            'Cut power in vulnerable zones'
+        ]
     }
 }
 
